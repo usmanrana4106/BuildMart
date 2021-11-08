@@ -15,7 +15,7 @@
                             <label for="firstName" class="col-md-4 col-form-label text-md-right">{{ __('First Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="firstName" type="text" class="form-control @error('firstName') is-invalid @enderror" name="firstName" value="{{ old('firstName') }}" required autocomplete="firstName" placeholder="Enter your first Name In English" autofocus>
+                                <input id="firstName" type="text" class="form-control @error('firstName') is-invalid @enderror" name="firstName" onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)" value="{{ old('firstName') }}" required autocomplete="firstName" placeholder="Enter your first Name In English" autofocus>
 
                                 @error('firstName')
                                     <span class="invalid-feedback" role="alert">
@@ -29,7 +29,7 @@
                             <label for="lastName" class="col-md-4 col-form-label text-md-right">{{ __('Last Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="lastName" type="text" class="form-control @error('lastName') is-invalid @enderror" name="lastName" value="{{ old('lastName') }}" required autocomplete="lastName" placeholder="Enter your Last Name In English" autofocus>
+                                <input id="lastName" type="text" class="form-control @error('lastName') is-invalid @enderror" name="lastName" onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)" value="{{ old('lastName') }}" required autocomplete="lastName" placeholder="Enter your Last Name In English" autofocus>
 
                                 @error('lastName')
                                 <span class="invalid-feedback" role="alert">
@@ -43,7 +43,7 @@
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required placeholder="Enter Valid Email Address" autocomplete="email">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email"  value="{{ old('email') }}" required placeholder="Enter Valid Email Address" autocomplete="email">
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -57,12 +57,12 @@
                         <div class="form-group row">
                             <label for="mobileNumber" class="col-md-4 col-form-label text-md-right">{{ __('Mobile Number') }}</label>
 
-                            <div class="row col-md-6">
+                            <div class="row col-md-7">
                                 <div class="col-md-4">
-                                    <input id="countryCode" type="text" class="form-control" name="countryCode" value="+966" autocomplete="countryCode" readonly autofocus>
+                                    <input id="countryCode" type="text" class="form-control" name="countryCode" value="+9665" autocomplete="countryCode" readonly autofocus>
                                 </div>
                                 <div class="col-md-8">
-                                    <input id="mobileNumber" type="text" class="form-control @error('mobileNumber') is-invalid @enderror" name="mobileNumber" value="{{ old('mobileNumber') }}" required autocomplete="mobileNumber" placeholder="5xxxxxxxx" autofocus>
+                                    <input id="mobileNumber" type="tel" class="form-control @error('mobileNumber') is-invalid @enderror" name="mobileNumber" value="{{ old('mobileNumber') }}" required autocomplete="mobileNumber" placeholder="Enter 8 digit Numbers only" pattern="[0-9]{8}" maxlength="8" autofocus>
                                 </div>
 
                                 @error('mobileNumber')
