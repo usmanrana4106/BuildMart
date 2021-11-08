@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TodoTask extends Model
+class TodoList extends Model
 {
     use HasFactory;
-    protected $table="todo_tasks";
+    protected $table="todo_lists";
     protected $fillable = [
-        'list_id', 'task', 'status', 'created_at', 'updated_at'
+        'user_id', 'todo_description', 'created_at', 'updated_at'
     ];
     public $timestamps=false;
 }

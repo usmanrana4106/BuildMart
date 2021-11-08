@@ -153,12 +153,12 @@
                     columns: [
                         {
                            render: function (data, type, row, meta) {
-                                return '<input name="status_' + row.id + '" type="checkbox" class="form-control" style="width:25px" >'
+                                return '<input name="status_' + row.id + '" type="checkbox" class="form-control" style="width:25px" onchange="todolistComplete(this,row.id)>'
                             }
                         },
                         {
-                            data: 'task',
-                            name: 'task'
+                            data: 'todo_description',
+                            name: 'todo_description'
                         },
                         {
                             data: 'created_at',
@@ -192,6 +192,10 @@
             });
         }
 
+        function todolistComplete(obj,id)
+        {
+
+        }
 
 
     </script>

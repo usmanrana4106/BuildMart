@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TodoList;
 use App\Models\TodoTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TodoController extends Controller
 {
@@ -16,15 +18,23 @@ class TodoController extends Controller
      * \Illuminate\Contracts\View\Factory|
      * \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
+
     public function index()
     {
+
+    }
+
+
+    public function taskLists($list_id)
+    {
+        $list=TodoList::where('id',$list_id)->first();
         if (request()->ajax())
         {
-            $task=TodoTask::where('user_id',Auth::user()->id);
+            $task=TodoTask::where('list_id',request('id'));
             return datatables()->of($task)
                 ->make(true);
         }
-        return view('todoTasks.index');
+        return view('todoTasks.tasks.index',compact('list_id','list'));
     }
 
     /**
@@ -36,9 +46,17 @@ class TodoController extends Controller
      * \Illuminate\Contracts\View\View|
      * \Illuminate\Http\Response
      */
+
     public function create()
     {
-        return view('todoTasks.create');
+
+    }
+
+
+    public function createTasks($list_id)
+    {
+        $list=TodoList::where('id',$list_id)->first();
+        return view('todoTasks.tasks.create',compact('list_id','list'));
     }
 
     /**
@@ -57,14 +75,15 @@ class TodoController extends Controller
         $this->validate($request, [
             'task' => ['required', 'string', 'max:255'],
         ]);
+
         TodoTask::create([
-            'user_id' => Auth::user()->id,
+            'list_id' => $request->list_id,
             'task' => $request->task,
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
 
-        return redirect('/todo-tasks')->with('success',"Task is successfully Created!!! " );
+        return redirect('/taskLists/'. $request->list_id)->with('success',"Task is successfully Created!!! " );
     }
 
     /**
@@ -82,11 +101,18 @@ class TodoController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return
+     * \Illuminate\Contracts\Foundation\Application|
+     * \Illuminate\Contracts\View\Factory|
+     * \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function edit($id)
     {
-        //
+        $todotask= TodoTask::where([
+            'id'=>$id
+        ])->first();
+        $todoList=TodoList::where('id',$todotask->list_id)->first();
+        return view('todoTasks.tasks.edit',compact('todoList','todotask'));
     }
 
     /**
@@ -94,21 +120,69 @@ class TodoController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return
+     * \Illuminate\Contracts\Foundation\Application|
+     * \Illuminate\Http\RedirectResponse|
+     * \Illuminate\Http\Response|\Illuminate\Routing\Redirector
      */
     public function update(Request $request, $id)
     {
-        //
+        $todotask= TodoTask::where([
+            'id'=>$id
+        ])->first();
+        $todotask->update(['task' => $request->task]);
+        return redirect('/taskLists/'. $todotask->list_id)->with('success',"Todo List successfully Updated!!! " );
+    }
+
+    public function updateStatus($task_id)
+    {
+        $task=TodoTask::where([
+            'id'=>$task_id
+        ])->first();
+        if ($task->status == 0)
+        {
+            $task=TodoTask::where([
+                'id'=>$task_id
+            ])->update(['status'=>1]);
+        }
+        else
+        {
+            $task=TodoTask::where([
+                'id'=>$task_id
+            ])->update(['status'=>0]);
+        }
+
+        return response()->json('success', 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return
+     * \Illuminate\Contracts\Foundation\Application|
+     * \Illuminate\Contracts\View\Factory|
+     * \Illuminate\Contracts\View\View|
+     * \Illuminate\Http\Response
      */
+
+
+    public function delete($id)
+    {
+        $todotask= TodoTask::where([
+            'id'=>$id
+        ])->first();
+        $todoList= TodoList::where([
+            'id'=>$todotask->list_id
+        ])->first();
+        return view('todoTasks.tasks.delete',compact('todoList','todotask'));
+    }
+
+
     public function destroy($id)
     {
-        //
+        $todoTask = TodoTask::find($id);
+        $todoTask->delete();
+        return redirect('/taskLists/'. $todoTask->list_id)->with('success', 'Task is successfully Delete!!!');
     }
 }

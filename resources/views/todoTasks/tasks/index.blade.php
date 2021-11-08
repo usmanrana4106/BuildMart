@@ -52,9 +52,9 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        {{ __('Todo List') }}
+                        {{ __('Todo Tasks : ') }} ({{ $list->todo_description }})
                         <div style="float: right;" >
-                            <a href="javascript:add();" class="btn btn-sm btn-info " style=" font-size: 16px;"><i class="fa fa-plus"></i> {{ __('Add List +') }}</a>
+                            <a href="javascript:add();" class="btn btn-sm btn-info " style=" font-size: 16px;"><i class="fa fa-plus"></i> {{ __('Add Task +') }}</a>
 
                         </div>
                     </div>
@@ -77,11 +77,13 @@
 
 
 
-                        <table id="user_data" class="table table-bordered table-striped">
+                        <table id="task_data" class="table table-bordered table-striped">
                             <thead>
-                            <TH style="width:50%">Todo Lists</TH>
-                            <TH style="width:20%">Created_at</TH>
-                            <TH style="width:30%">Action</TH>
+                            <TH style="width:10%">No</TH>
+                            <TH style="width:40%">Todo Task</TH>
+                            <TH style="width:20%">Status</TH>
+                            <TH style="width:10%">Created_at</TH>
+                            <TH style="width:10%">Action</TH>
 
                             </thead>
                             <tbody>
@@ -103,8 +105,10 @@
                                 </div>
 
                             </div>
-                        </div>
 
+
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,23 +122,10 @@
                 fill_datatable();
                 function fill_datatable() {
 
-                    var dataTable = $('#user_data').DataTable({
+                    var dataTable = $('#task_data').DataTable({
                         //searching: false,
                         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                        dom: 'lBfrtip',
 
-                        "buttons": [
-                            {
-                                extend: 'excel',
-                                text: 'Export to Excel',
-                                exportOptions: {
-                                    modifier: {
-                                        search: 'applied',
-                                        order: 'applied'
-                                    }
-                                }
-                            }
-                        ],
 
                         responsive: true,
                         processing: true,
@@ -144,18 +135,33 @@
                         "pagingType": "full_numbers",
                         "autoWidth": false,
                         ajax: {
-                            url: "{{ route('home') }}",
+                            url: "{{ route('taskLists',$list_id) }}",
 
                         },
                         columns: [
+                            {
+                                render: function (data, type, row, meta) {
+                                    if (row.status == 1)
+                                        return '<input name="status_' + row.id + '" type="checkbox" class="form-control checkbox" style="width:25px" value="'+ row.id +'" checked>'
+                                    else
+                                        return '<input name="status_' + row.id + '" type="checkbox" class="form-control checkbox" style="width:25px" value="'+ row.id +'" >'
+
+                                }
+                            },
+                            {
+                                data: 'task',
+                                name: 'task'
+                            },
 
                             {
-                                data: 'todo_description',
+                                data: 'status',
+                                name: 'status',
                                 render: function (data, type, row, meta) {
-
-                                    var url = "{{URL('/taskLists')}}" +'/'+ row.id;
-                                    return '<a href="' + url + '" >'+ data +'</a>';
-
+                                    if (row.status == "1") {
+                                        return '<span style="background: #74b174; color: white; " >  Complete</span>';
+                                    } else {
+                                        return '<span style="background: #965050; color: white;"> UnComplete </span>';
+                                    }
 
                                 }
                             },
@@ -169,9 +175,9 @@
                                 "targets": -1,
                                 //"data": 'id',
                                 "render": function (data, type, row, meta) {
-                                        return '<input type="hidden" id="IDs_all_' + meta.row + '" name="IDs_all_' + meta.row + '" value="' + row.id + '">' +
-                                            '<a id=' + row.id + ' data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btn btn-primary edit"> <i class="fa fa-pencil"></i> </a>' +
-                                            '&nbsp;<a id=' + row.id + ' data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btn btn-danger delete"> <i class="fa fa-times"></i> </a>';
+                                    return '<input type="hidden" id="IDs_all_' + meta.row + '" name="IDs_all_' + meta.row + '" value="' + row.id + '">' +
+                                        '<a id=' + row.id + ' data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btn btn-primary edit"> <i class="fa fa-pencil"></i> </a>' +
+                                        '&nbsp;<a id=' + row.id + ' data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btn btn-danger delete"> <i class="fa fa-times"></i> </a>';
                                 }
                             }
                         ]
@@ -179,8 +185,25 @@
                     });
                 }
 
+                $('#task_data tbody').on('click', '.checkbox', function (e) {
+                    e.preventDefault();
 
-                $('#user_data tbody').on('click', '.edit', function (e) {
+                    var id = $(this).val();
+                    $.ajax({
+                        type: 'GET',
+                        url: "{{URL("/updateStatus/")}}" + "/" + id,
+                        contentType: "html",
+                        dataType: 'html',
+                        success: function (data) {
+                            $('#task_data').DataTable().destroy();
+                            fill_datatable();
+                        }
+                    });
+                });
+
+
+
+                $('#task_data tbody').on('click', '.edit', function (e) {
                     e.preventDefault();
                     document.getElementById('response').innerHTML = loader;
                     document.getElementById('myModal').style.display = 'block';
@@ -188,7 +211,7 @@
 
                     $.ajax({
                         type: 'GET',
-                        url: "{{URL('/edit-todoList')}}" + "/" + id ,
+                        url: "{{URL('/todo-tasks')}}" + "/" + id + '/edit',
                         contentType: "html",
                         dataType: 'html',
                         success: function (data) {
@@ -200,7 +223,7 @@
                 });
 
 
-                $('#user_data tbody').on('click', '.delete', function (e) {
+                $('#task_data tbody').on('click', '.delete', function (e) {
                     e.preventDefault();
                     document.getElementById('response').innerHTML = loader;
                     document.getElementById('myModal').style.display = 'block';
@@ -208,7 +231,7 @@
 
                     $.ajax({
                         type: 'GET',
-                        url: "{{URL('/delete-todoList')}}" + "/" + id ,
+                        url: "{{URL('/delete-todoTask')}}" + "/" + id ,
                         contentType: "html",
                         dataType: 'html',
                         success: function (data) {
@@ -230,7 +253,7 @@
                 document.getElementById('myModal').style.display = 'block';
                 $.ajax({
                     type: 'GET',
-                    url: "{{URL("/create-todoList")}}",
+                    url: "{{URL("/createTasks/")}}" + "/" + {{ $list_id }},
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -240,11 +263,21 @@
                 });
             }
 
-            function todolistComplete(obj,id)
+
+            function todoTaskComplete(obj,id)
             {
-
+                alert(id);
+                {{--$.ajax({--}}
+                {{--    type: 'GET',--}}
+                {{--    url: "{{URL("/updateStatus/")}}" + "/" + id,--}}
+                {{--    contentType: "html",--}}
+                {{--    dataType: 'html',--}}
+                {{--    success: function (data) {--}}
+                {{--        $('#task_data').DataTable().destroy();--}}
+                {{--        fill_datatable();--}}
+                {{--    }--}}
+                {{--});--}}
             }
-
 
         </script>
 
