@@ -6,7 +6,7 @@
                 <div class="card-header">{{ __('Delete Todo List') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('todoList.delete',$todoList->id) }}">
+                    <form method="POST" action="{{ route('todoList.destroy',$todoList->id) }}">
                         {{method_field('DELETE')}}
                         @csrf
 

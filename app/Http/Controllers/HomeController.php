@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TodoList;
+use App\Models\TodoTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -75,6 +76,7 @@ class HomeController extends Controller
 
     public function delete($id)
     {
+
         $todoList= TodoList::where([
             'user_id' => Auth::user()->id,
             'id'=>$id
@@ -84,6 +86,7 @@ class HomeController extends Controller
 
     public function destroy($id)
     {
+        TodoTask::where('list_id',$id)->delete();
         $todoList = TodoList::find($id);
         $todoList->delete();
         return redirect('/home')->with('success', 'Todo List successfully Delete!!!');
