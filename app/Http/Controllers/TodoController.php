@@ -83,7 +83,7 @@ class TodoController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'task' => ['required', 'string', 'max:255'],
+            'task' => ['required', 'string', 'max:255', 'unique:todo_tasks'],
         ]);
 
         TodoTask::create([

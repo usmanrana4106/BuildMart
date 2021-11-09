@@ -43,8 +43,9 @@ class HomeController extends Controller
     public function store(Request  $request)
     {
         $this->validate($request, [
-            'todo_description' => ['required', 'string', 'max:255'],
+            'todo_description' => ['required', 'string', 'max:255','unique:todo_lists'],
         ]);
+
         TodoList::create([
             'user_id' => Auth::user()->id,
             'todo_description' => $request->todo_description,
@@ -66,6 +67,7 @@ class HomeController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $todoList= TodoList::where([
             'user_id' => Auth::user()->id,
             'id'=>$id

@@ -74,7 +74,14 @@
                             </div>
 
                         @endif
-
+                            @if($errors->any())
+                                @foreach ($errors->all() as $error)
+                                    <div id="alert-error_div" class="alert alert-dismissible alert-danger">
+                                        <button onclick="document.getElementById('alert-error_div').style.display='none'" type="button" class="close" data-dismiss="alert">&times;</button>
+                                        <strong>Error !</strong>   {{$error}}.
+                                    </div>
+                                @endforeach
+                            @endif
 
 
                         <table id="user_data" class="table table-bordered table-striped">
